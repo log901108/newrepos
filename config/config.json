@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "adm",
+    "password": "hjy1234",
+    "database": "secure_node",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "operatorsAliases": false
+  },
+  "test": {
+    "username": "adm",
+    "password": "hjy1234",
+    "database": "secure_node",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "operatorsAliases": false
+  },
+  "production": {
+    "username": "adm",
+    "password": "hjy1234",
+    "database": "secure_node",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "operatorsAliases": false
+  }
+}
