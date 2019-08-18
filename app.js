@@ -23,6 +23,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+middle = function (req, res, next) {
+  /*if (req.headers['my-special-header']) {
+     // custom header exists, then call next() to pass to the next function
+     next();
+
+  } else {
+
+    res.sendStatus(403);      
+
+  }*/
+	res.cookie('middle', 'AccessToken', {httpOnly:true, expires: new Date(Date.now() + 900000000)});
+	next();
+}
+
 app.use('/', index);
 app.use('/users', users);
 app.use('/api', apiRouter);

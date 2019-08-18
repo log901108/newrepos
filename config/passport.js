@@ -1,6 +1,6 @@
 const JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
-
+const jwt = require('jsonwebtoken');
 // load up the user model
 const User = require('../models').User;
 
@@ -31,9 +31,29 @@ module.exports = function(passport) {
   opts.jwtFromRequest = cookieExtractor; // check token in cookie
   opts.secretOrKey = 'nodeauthsecret';
     passport.use('jwt', new JwtStrategy(opts, function(jwt_payload, done) {
+		/*
     User
       .findByPk(jwt_payload.id)
       .then((user) => { return done(null, user); })
+      .catch((error) => { return done(error, false); });
+	  */
+	//refresh token 적용	
+	User
+      .findOne({
+        where: {
+          refresh_token:jwt_payload.refresh
+        },
+		limit:1,
+      })
+      .then((user) => { 
+						if(user){
+							
+							return done(null, user); //유효한 토큰일 경우
+						}
+						else{
+							return done(null, false);//못찾을경우(동시로그인 등으로 token값은 있으나 유효한 토큰이 아닐때)
+						}
+	  })
       .catch((error) => { return done(error, false); });
   }));
 };
