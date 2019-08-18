@@ -110,7 +110,7 @@ router.post('/login', function(req,res){
 							{where:
 							  {username : user.username}});
 			  
-			  var AccessToken = jwt.sign(JSON.parse(JSON.stringify({"refresh":RefreshToken})), 'nodeauthsecret', {expiresIn: 30*60 });
+			  var AccessToken = jwt.sign(JSON.parse(JSON.stringify({"id":user.id,"refresh":RefreshToken})), 'nodeauthsecret', {expiresIn: 30*60 });
 			//4. 토큰을 디코드하는 함수(옵션임)
             //var decoded = jwt.verify(AccessToken, 'nodeauthsecret', function(err, data){
             //console.log(err, data);

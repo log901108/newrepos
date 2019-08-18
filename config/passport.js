@@ -38,10 +38,12 @@ module.exports = function(passport) {
       .catch((error) => { return done(error, false); });
 	  */
 	//refresh token 적용	
+		console.log("payload:",jwt_payload);
 	User
       .findOne({
         where: {
-          refresh_token:jwt_payload.refresh
+          refresh_token:jwt_payload.refresh,
+		  id: jwt_payload.id,		
         },
 		limit:1,
       })
