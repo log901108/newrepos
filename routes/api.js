@@ -109,7 +109,7 @@ router.post('/login', function(req,res){
 							},
 							{where:
 							  {username : user.username}});
-			  
+			  //user.UpdateClearLoginFailCount(req);
 			  var AccessToken = jwt.sign(JSON.parse(JSON.stringify({"id":user.id,"refresh":RefreshToken})), 'nodeauthsecret', {expiresIn: 30*60 });
 			//4. 토큰을 디코드하는 함수(옵션임)
             //var decoded = jwt.verify(AccessToken, 'nodeauthsecret', function(err, data){
@@ -132,14 +132,15 @@ router.post('/login', function(req,res){
 			  //쿠키와 저장된 refresh token이 같은지 확인하고 이상없을시 accesstoken 재발행?
 			  //access token 유효기간 만료나 api요청으로 재발급시 refresh token과 같은지 확인하는 절차가 있으면 됨
 			  //set cookie with httpOnly
+			  
 			  console.log(AccessToken);
 			  res.cookie('token', AccessToken, {httpOnly:true, expires: new Date(Date.now() + 30*60*1000)});
 			  //console.log(req.cookies.token); 
 			  //6.토큰을 json으로 보내기(옵션임)
 			  res.json({success: true, token: 'JWT ' + AccessToken, username: user.username, createdAt: user.createdAt });
           } else { //!isMatch
-			user.PlusLoginFailCount(req.body.username);
-			//user.UpdateClearLoginFailCount(req.body.username);
+			user.PlusLoginFailCount(req);
+			//user.UpdateClearLoginFailCount(req);
             res.status(401).send({success: false, msg: 'Authentication failed. Wrong password.'});
           }
         });
