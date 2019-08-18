@@ -109,7 +109,7 @@ router.post('/login', function(req,res){
 							},
 							{where:
 							  {username : user.username}});
-			  //user.UpdateClearLoginFailCount(req);
+			  user.UpdateClearLoginFailCount(req);
 			  var AccessToken = jwt.sign(JSON.parse(JSON.stringify({"id":user.id,"refresh":RefreshToken})), 'nodeauthsecret', {expiresIn: 30*60 });
 			//4. 토큰을 디코드하는 함수(옵션임)
             //var decoded = jwt.verify(AccessToken, 'nodeauthsecret', function(err, data){
