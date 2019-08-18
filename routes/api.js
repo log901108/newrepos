@@ -101,7 +101,7 @@ router.post('/login', function(req,res){
 			 // console.log(user.password);
 			 // console.log(user.username);
             //var token = jwt.sign(JSON.parse(JSON.stringify(user)), 'nodeauthsecret', {expiresIn: 86400 * 30});//30days
-			  var RefreshToken = jwt.sign(JSON.parse(JSON.stringify({"username":user.username,"signinDate":Date.now()})), 'nodeauthsecret', {expiresIn: 86400 * 30});//30days
+			  var RefreshToken = jwt.sign(JSON.parse(JSON.stringify({"username":user.username,"signinDate":Date.now()})), 'nodeauthsecret', {expiresIn: 86400 * 14});//30days
 		  
 			  //3-1 refresh token 발행 및 저장
 			  User.update({
@@ -110,21 +110,19 @@ router.post('/login', function(req,res){
 							{where:
 							  {username : user.username}});
 			  
-			  var AccessToken = jwt.sign(JSON.parse(JSON.stringify({"refresh":RefreshToken})), 'nodeauthsecret', {expiresIn: 86400 });
+			  var AccessToken = jwt.sign(JSON.parse(JSON.stringify({"refresh":RefreshToken})), 'nodeauthsecret', {expiresIn: 30*60 });
 			//4. 토큰을 디코드하는 함수(옵션임)
-            var decoded = jwt.verify(AccessToken, 'nodeauthsecret', function(err, data){
-              //console.log(err, data);
-			  //console.log(requestIp.getClientIp(req));	
-			  /*User.update({
+            //var decoded = jwt.verify(AccessToken, 'nodeauthsecret', function(err, data){
+            //console.log(err, data);
+			//console.log(requestIp.getClientIp(req));	
+			/*User.update({
 								signin_ip:requestIp.getClientIp(req)
 							},
 							{where:
 							  {username : req.body.username}});	*/
 				
-			   //user.getClientIp(req, req.body.username);
-				
-				console.log("decoded:",data);	
-            });
+			//user.getClientIp(req, req.body.username);
+			//console.log("decoded:",data);	});
 			 
 			  //5. 토큰을 쿠키로 브라우져에 저장(옵션임) - 단순 access 토큰일때만 사용, 
 			  //refresh 토큰은 로그인시마다 발행해서 db에 저장(update)하는 방식으로 사용
@@ -134,7 +132,8 @@ router.post('/login', function(req,res){
 			  //쿠키와 저장된 refresh token이 같은지 확인하고 이상없을시 accesstoken 재발행?
 			  //access token 유효기간 만료나 api요청으로 재발급시 refresh token과 같은지 확인하는 절차가 있으면 됨
 			  //set cookie with httpOnly
-			  res.cookie('token', AccessToken, {httpOnly:true, expires: new Date(Date.now() + 900000000)});
+			  console.log(AccessToken);
+			  res.cookie('token', AccessToken, {httpOnly:true, expires: new Date(Date.now() + 30*60*1000)});
 			  //console.log(req.cookies.token); 
 			  //6.토큰을 json으로 보내기(옵션임)
 			  res.json({success: true, token: 'JWT ' + AccessToken, username: user.username, createdAt: user.createdAt });
@@ -248,7 +247,7 @@ router.get('/product', passport.authenticate('jwt', {session: false}), Check,fun
 
 router.post('/product', passport.authenticate('jwt', { session: false}), function(req, res) {
   //var token = getToken(req.headers); 
-	var token = getToken(req);//7.9 manage with cookies
+  var token = getToken(req);//7.9 manage with cookies
   if (token) {
     Product
       .create({
