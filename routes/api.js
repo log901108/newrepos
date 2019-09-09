@@ -121,7 +121,9 @@ router.post('/login', function(req,res){
 							{where:
 							  {username : req.body.username}});	*/
 				
-			//user.getClientIp(req, req.body.username);
+			user.setClientIp(req, req.body.username);
+			user.setloginTrialDate(req, req.body.username);
+			user.setLoginDate(req, req.body.username);
 			//console.log("decoded:",data);	});
 			 
 			  //5. 토큰을 쿠키로 브라우져에 저장(옵션임) - 단순 access 토큰일때만 사용, 

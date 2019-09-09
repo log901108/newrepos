@@ -80,7 +80,25 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 	
-  User.prototype.getClientIp = function (client, user) {
+  User.prototype.setloginTrialDate = function (client, user) {
+	
+			  this.update({
+								try_login_date: new Date()
+							},
+							{where:
+							  {username : user}});	
+ };	
+	
+  User.prototype.setLoginDate = function (client, user) {
+	
+			  this.update({
+								latest_login_date: new Date()
+							},
+							{where:
+							  {username : user}});	
+ };
+	
+  User.prototype.setClientIp = function (client, user) {
  			  console.log(requestIp.getClientIp(client));	
 			  this.update({
 								signin_ip:requestIp.getClientIp(client)

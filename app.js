@@ -4,12 +4,28 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+const cluster = require('cluster');
+
+const numCPUs = require('os').cpus().length;
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 var apiRouter = require('./routes/api');
 
 var app = express();
+
+if (cluster.isMaster) {
+  console.log(`Master ${process.pid} is running`);
+
+  // Fork workers.
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`worker ${worker.process.pid} died`);
+  });
+} else {
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -60,6 +76,10 @@ app.use(function(err, req, res, next) {
 });
 
 app.listen(process.env.PORT || 3000, () => console.log('Example app listening on port 3000!'));
+ console.log(`Worker ${process.pid} started`);
+}
+
+
 
 module.exports = app;
 
