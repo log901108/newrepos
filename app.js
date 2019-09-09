@@ -22,6 +22,23 @@ if (cluster.isMaster) {
     cluster.fork();
   }
 
+  // Keep track of http requests
+  let numReqs = 0;
+  setInterval(() => {
+    console.log(`numReqs = ${numReqs}`);
+  }, 1000);
+
+  // Count requests
+  function messageHandler(msg) {
+    if (msg.cmd && msg.cmd === 'notifyRequest') {
+      numReqs += 1;
+    }
+  }
+	
+  for (const id in cluster.workers) {
+    cluster.workers[id].on('message', messageHandler);
+  }
+	
   cluster.on('exit', (worker, code, signal) => {
     console.log(`worker ${worker.process.pid} died`);
   });
@@ -39,19 +56,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-middle = function (req, res, next) {
-  /*if (req.headers['my-special-header']) {
-     // custom header exists, then call next() to pass to the next function
-     next();
 
-  } else {
-
-    res.sendStatus(403);      
-
-  }*/
-	res.cookie('middle', 'AccessToken', {httpOnly:true, expires: new Date(Date.now() + 900000000)});
-	next();
-}
 
 app.use('/', index);
 app.use('/users', users);

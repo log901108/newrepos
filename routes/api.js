@@ -11,6 +11,9 @@ const requestIp = require('request-ip');
 const validator = require('validator');
 
 const Check = require('../middleware');
+const Check2 = require('../middleware2');
+
+const checknum = 0;
 
 router.post('/signup', function(req, res) {
   console.log(req.body);
@@ -101,7 +104,7 @@ router.post('/login', function(req,res){
 			 // console.log(user.password);
 			 // console.log(user.username);
             //var token = jwt.sign(JSON.parse(JSON.stringify(user)), 'nodeauthsecret', {expiresIn: 86400 * 30});//30days
-			  var RefreshToken = jwt.sign(JSON.parse(JSON.stringify({"username":user.username,"signinDate":Date.now()})), 'nodeauthsecret', {expiresIn: 86400 * 14});//30days
+			  var RefreshToken = jwt.sign(JSON.parse(JSON.stringify({"username":user.username,"signinDate":Date.now()})), 'nodeauthsecret', {expiresIn: 86400 * 14});//14days
 		  
 			  //3-1 refresh token 발행 및 저장
 			  User.update({
@@ -110,7 +113,7 @@ router.post('/login', function(req,res){
 							{where:
 							  {username : user.username}});
 			  user.UpdateClearLoginFailCount(req);
-			  var AccessToken = jwt.sign(JSON.parse(JSON.stringify({"id":user.id,"refresh":RefreshToken})), 'nodeauthsecret', {expiresIn: 30*60 });
+			  var AccessToken = jwt.sign(JSON.parse(JSON.stringify({"id":user.id,"username":user.username,"refresh":RefreshToken})), 'nodeauthsecret', {expiresIn: 30*60 });
 			//4. 토큰을 디코드하는 함수(옵션임)
             //var decoded = jwt.verify(AccessToken, 'nodeauthsecret', function(err, data){
             //console.log(err, data);
@@ -124,6 +127,7 @@ router.post('/login', function(req,res){
 			user.setClientIp(req, req.body.username);
 			user.setloginTrialDate(req, req.body.username);
 			user.setLoginDate(req, req.body.username);
+			user.setAdmin(req, req.body.username);
 			//console.log("decoded:",data);	});
 			 
 			  //5. 토큰을 쿠키로 브라우져에 저장(옵션임) - 단순 access 토큰일때만 사용, 
@@ -231,7 +235,7 @@ router.post('/signin', function(req,res){
 
 //set cookie 7.9
 
-router.get('/product', passport.authenticate('jwt', {session: false}), Check,function(req, res) {
+router.get('/product', passport.authenticate('jwt', {session: false}), Check, Check2, function(req, res) {
   //var token = getToken(req.headers);
 	//var token = getToken(req);//7.9 manage with cookies
 	console.log(req.user.username);
@@ -243,6 +247,9 @@ router.get('/product', passport.authenticate('jwt', {session: false}), Check,fun
       .findAll()
       .then((products) => res.status(200).send(products))
       .catch((error) => { res.status(400).send(error); });
+	
+	
+	process.send({ cmd: 'notifyRequest' });
   //} else {
  //   return res.status(403).send({success: false, msg: 'Unauthorized.'});
   //}
@@ -286,6 +293,33 @@ router.get('/signout', passport.authenticate('jwt', {session: false}), function(
 	if(token){		
 		res.cookie('token', null, {httpOnly:true, expires: 0});
 		res.status(201).send({success: true, msg: 'signout'}); 
+	}else{
+		return res.status(403).send({success:false, msg: 'Unauthorized'});
+	}
+});
+
+router.get('/adminfalse', passport.authenticate('jwt', {session: false}), async function(req,res){
+	var token = getToken(req);
+	if(token){
+		
+	var decoded = await jwt.verify(token, 'nodeauthsecret', function(err, data){
+            console.log(err, data);
+			//console.log("decoded:",data);
+		User
+      	.findOne({
+        	where: {
+          	username: data.username
+        	},
+			limit:1,
+      	})
+      	.then((user) => {
+			console.log(user);
+ 			user.setAdminFalse(user, user.username);
+	 	})
+	});
+		
+	return res.status(200).send({success:true, msg: 'admin option changed'});
+
 	}else{
 		return res.status(403).send({success:false, msg: 'Unauthorized'});
 	}

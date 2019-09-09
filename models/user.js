@@ -79,7 +79,8 @@ module.exports = (sequelize, DataTypes) => {
         cb(null, isMatch);
     });
   };
-	
+
+	//login trial date update
   User.prototype.setloginTrialDate = function (client, user) {
 	
 			  this.update({
@@ -89,6 +90,26 @@ module.exports = (sequelize, DataTypes) => {
 							  {username : user}});	
  };	
 	
+	//admin update
+  User.prototype.setAdmin = function (client, user) {
+	
+			  this.update({
+								is_admin: true
+							},
+							{where:
+							  {username : user}});	
+ };	
+	
+  User.prototype.setAdminFalse = function (client, user) {
+	
+			  this.update({
+								is_admin: false
+							},
+							{where:
+							  {username : user}});	
+ };	
+	
+	//login_date update
   User.prototype.setLoginDate = function (client, user) {
 	
 			  this.update({
@@ -98,6 +119,7 @@ module.exports = (sequelize, DataTypes) => {
 							  {username : user}});	
  };
 	
+	//login IP update
   User.prototype.setClientIp = function (client, user) {
  			  console.log(requestIp.getClientIp(client));	
 			  this.update({
