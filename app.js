@@ -11,6 +11,7 @@ const numCPUs = require('os').cpus().length;
 var index = require('./routes/index');
 var users = require('./routes/users');
 var apiRouter = require('./routes/api');
+var worker = require('./routes/worker');
 
 var app = express();
 
@@ -18,30 +19,47 @@ if (cluster.isMaster) {
   console.log(`Master ${process.pid} is running`);
 
   // Fork workers.
-  for (let i = 0; i < numCPUs; i++) {
-    cluster.fork();
-  }
+  //for (let i = 0; i < numCPUs; i++) {
+    const worker = cluster.fork();
+  //}
 
   // Keep track of http requests
   let numReqs = 0;
   setInterval(() => {
     console.log(`numReqs = ${numReqs}`);
-  }, 1000);
+  }, 5*1000);
 
   // Count requests
   function messageHandler(msg) {
     if (msg.cmd && msg.cmd === 'notifyRequest') {
       numReqs += 1;
     }
+	  
+   if (msg.cmd && msg.cmd === 'notifyEnd') {
+      numReqs = 0;
+    }	
+	  
+   if (msg.cmd && msg.cmd === 'notifyResponse') {	
+	   		console.log('response work');
+ 
+			if(numReqs > 0){
+	  				worker.send(numReqs);				
+				}else{
+					worker.send('off');	
+				}
+  	}  
   }
 	
   for (const id in cluster.workers) {
     cluster.workers[id].on('message', messageHandler);
   }
 	
-  cluster.on('exit', (worker, code, signal) => {
-    console.log(`worker ${worker.process.pid} died`);
-  });
+  //cluster.on('exit', (worker, code, signal) => {
+  //  console.log(`worker ${worker.process.pid} died`);
+  //});
+	
+ 
+	
 } else {
 
 // view engine setup
@@ -61,6 +79,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/users', users);
 app.use('/api', apiRouter);
+app.use('/worker', worker);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
