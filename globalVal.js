@@ -3,7 +3,6 @@ const cluster = require('cluster');
 
 let globalData = {};
 
-
 module.exports.get = function(name) {
     return globalData[name];
 }

@@ -35,14 +35,13 @@ if (cluster.isMaster) {
   function messageHandler(msg) {
     if (msg.cmd && msg.cmd === 'notifyRequest') {
       numReqs += 1;
-	  global.set('a',numReqs);
+	  global.set('working',numReqs);
     }
 	  
    if (msg.cmd && msg.cmd === 'notifyEnd') {
       numReqs = 0;
-	  global.set('a',numReqs);
-    }	
-	  
+	  global.set('working',numReqs);
+    }	  
   }
 	
   for (const id in cluster.workers) {
@@ -53,7 +52,8 @@ if (cluster.isMaster) {
   //  console.log(`worker ${worker.process.pid} died`);
   //});
 	
- global.set('a',numReqs);
+ global.set('working',numReqs);
+ global.set('workingVal',numReqs);
 	
 } else {
 
@@ -168,5 +168,6 @@ https://velog.io/@cadenzah/sequelize-document-2
  pm2적용
  
  8.2019-09-13 operationalaises 지우기(영향가는부분있는지 알아볼것), 클러스터 글로벌변수 세팅  
+ machinelearning usual term site: https://www.codeonweb.com/@mookiekim/ml-glossary
  
 */

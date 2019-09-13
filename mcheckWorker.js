@@ -1,13 +1,13 @@
 var global = require('./globalVal');
 module.exports = async function (req, res, next) {
 
-	if ( parseInt(global.get('a')) == 0) { 
-		console.log("req:", global.get('a'));
+	if ( parseInt(global.get('working')) == 0) { 
+		console.log("req:", global.get('working'));
 		next();
 			
     } else {
 		//console.log("process#:",msg);
-		console.log("req:", global.get('a'));
+		console.log("req:", global.get('working'));
 		res.status(200).send({success:false, message:'worker is working. cannot start worker'})
 		
 	}  
