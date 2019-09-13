@@ -13,15 +13,17 @@ var users = require('./routes/users');
 var apiRouter = require('./routes/api');
 var worker = require('./routes/worker');
 
+var global = require('./globalVal');
+
 var app = express();
 
 if (cluster.isMaster) {
   console.log(`Master ${process.pid} is running`);
 
   // Fork workers.
-  //for (let i = 0; i < numCPUs; i++) {
-    const worker = cluster.fork();
-  //}
+  for (let i = 0; i < numCPUs; i++) {
+     cluster.fork();
+  }
 
   // Keep track of http requests
   let numReqs = 0;
@@ -33,21 +35,14 @@ if (cluster.isMaster) {
   function messageHandler(msg) {
     if (msg.cmd && msg.cmd === 'notifyRequest') {
       numReqs += 1;
+	  global.set('a',numReqs);
     }
 	  
    if (msg.cmd && msg.cmd === 'notifyEnd') {
       numReqs = 0;
+	  global.set('a',numReqs);
     }	
 	  
-   if (msg.cmd && msg.cmd === 'notifyResponse') {	
-	   		console.log('response work');
- 
-			if(numReqs > 0){
-	  				worker.send(numReqs);				
-				}else{
-					worker.send('off');	
-				}
-  	}  
   }
 	
   for (const id in cluster.workers) {
@@ -58,7 +53,7 @@ if (cluster.isMaster) {
   //  console.log(`worker ${worker.process.pid} died`);
   //});
 	
- 
+ global.set('a',numReqs);
 	
 } else {
 
@@ -73,8 +68,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-
 
 app.use('/', index);
 app.use('/users', users);
@@ -102,7 +95,6 @@ app.use(function(err, req, res, next) {
 app.listen(process.env.PORT || 3000, () => console.log('Example app listening on port 3000!'));
  console.log(`Worker ${process.pid} started`);
 }
-
 
 
 module.exports = app;
@@ -165,7 +157,6 @@ module.exports = app;
 6. 관리자 구현 (참조: https://velopert.com/2448)
 7. 로그아웃 https://dev-yakuza.github.io/ko/laravel/jwt-logout/
 https://parkseokje.github.io/2017/03/07/jwt/
-
 DB sequelize 관련
 http://webframeworks.kr/tutorials/expressjs/expressjs_orm_two/
 http://docs.sequelizejs.com/class/lib/sequelize.js~Sequelize.html
@@ -175,4 +166,7 @@ https://velog.io/@cadenzah/sequelize-document-2
  curly braces variable arrowfunction : https://stackoverflow.com/questions/37661166/what-do-curly-braces-inside-of-function-parameter-lists-do-in-es6
  
  pm2적용
+ 
+ 8.2019-09-13 operationalaises 지우기(영향가는부분있는지 알아볼것), 클러스터 글로벌변수 세팅  
+ 
 */

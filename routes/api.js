@@ -249,7 +249,7 @@ router.get('/product', passport.authenticate('jwt', {session: false}), Check, Ch
       .catch((error) => { res.status(400).send(error); });
 	
 	
-	process.send({ cmd: 'notifyRequest' });
+	//process.send({ cmd: 'notifyRequest' });
   //} else {
  //   return res.status(403).send({success: false, msg: 'Unauthorized.'});
   //}

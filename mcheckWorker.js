@@ -1,17 +1,17 @@
+var global = require('./globalVal');
 module.exports = async function (req, res, next) {
 
-  var func = await process.send({ cmd: 'notifyResponse' });	
-  var func2 = await process.on('message', (msg) => {
-	if (msg === 'off') { 
-		//console.log('off');
-		req.query.worker = 0;
+	if ( parseInt(global.get('a')) == 0) { 
+		console.log("req:", global.get('a'));
+		next();
 			
     } else {
 		//console.log("process#:",msg);
-		req.query.worker = 1;	
+		console.log("req:", global.get('a'));
+		res.status(200).send({success:false, message:'worker is working. cannot start worker'})
 		
 	}  
-	  	next();
-  });
-
 };
+
+//cluster process sharing data 
+//https://blog.seotory.com/post/2017/08/share-data-with-clustering-in-nodejs
