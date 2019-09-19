@@ -1,5 +1,5 @@
 var global = require('./globalVal');
-module.exports = async function (req, res, next) {
+module.exports = function (req, res, next) {
 
 	if ( parseInt(global.get('working')) == 0) { 
 		console.log("req:", global.get('working'));

@@ -170,4 +170,7 @@ https://velog.io/@cadenzah/sequelize-document-2
  8.2019-09-13 operationalaises 지우기(영향가는부분있는지 알아볼것), 클러스터 글로벌변수 세팅  
  machinelearning usual term site: https://www.codeonweb.com/@mookiekim/ml-glossary
  
+ cookie-setting b/w react and node
+ https://stackoverflow.com/questions/43002444/make-axios-send-cookies-in-its-requests-automatically?noredirect=1&lq=1
+ 
 */

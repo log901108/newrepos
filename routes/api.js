@@ -20,7 +20,12 @@ router.post('/signup', function(req, res) {
   if (!req.body.username || !req.body.password) {
     res.status(400).send({msg: 'Please pass username and password.'});
   } else {
-    User
+	//validator
+	if(validator.isLength(req.body.password,{min:9, max:15})&&
+	   !validator.isAlphanumeric(req.body.password) && 
+	   !validator.isLowercase(req.body.password))
+	{
+	  User
       .create({
         username: req.body.username,
         password: req.body.password
@@ -29,7 +34,11 @@ router.post('/signup', function(req, res) {
       .catch((error) => {
         console.log(error);
         res.status(400).send(error);
-      });
+      });   
+	}else{ //validator
+		res.status(400).send({msg: 'Please pass right username and password which fit in given regulation'});
+	}
+    
   }
 });
 /*
