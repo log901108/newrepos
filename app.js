@@ -173,4 +173,8 @@ https://velog.io/@cadenzah/sequelize-document-2
  cookie-setting b/w react and node
  https://stackoverflow.com/questions/43002444/make-axios-send-cookies-in-its-requests-automatically?noredirect=1&lq=1
  
+ 
+ //https://velog.io/@velopert/create-react-app-v2#5.-proxy-%EC%84%A4%EC%A0%95%EC%9D%84-%EC%BB%A4%EC%8A%A4%ED%84%B0%EB%A7%88%EC%9D%B4%EC%A7%95-%EA%B0%80%EB%8A%A5
+//https://tbang.tistory.com/124
+//https://bytrustu.tistory.com/73 -> webpackDevServer.config.js
 */
