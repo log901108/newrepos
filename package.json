@@ -30,6 +30,6 @@
     "sequelize": "^5.9.3",
     "serve-favicon": "~2.4.5",
     "validate": "^4.5.1",
-    "validator": "^11.1.0"
+    "validator": "^13.7.0"
   }
 }
